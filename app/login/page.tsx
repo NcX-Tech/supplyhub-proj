@@ -18,9 +18,10 @@ import { useAuth } from "@/contexts/auth-context"
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("") 
   const { toast } = useToast()
   const router = useRouter()
-  const { user, signIn } = useAuth()
+  const { user, signIn } = useAuth() 
 
   // Redirecionar se já estiver autenticado
   useEffect(() => {
@@ -70,6 +71,24 @@ export default function LoginPage() {
       setLoading(false)
     }
   }
+
+const handleLogin = async (e: React.FormEvent) => {
+      e.preventDefault()
+
+  try {
+    const { error } = await supabase.auth.signInWithPassword({
+      email: formData.emailOrUsername,  
+      password: formData.password
+    });
+    if (error) throw error;
+    router.push('/protected');
+  } catch (error: unknown) {
+    setError(error instanceof Error ? error.message : 'An error occurred');
+  } finally {
+    setLoading(false);
+  }
+}
+45  
 
   const handleGoogleLogin = async () => {
     try {
@@ -154,19 +173,19 @@ export default function LoginPage() {
             <CardDescription>Acesse sua conta para continuar</CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="emailOrUsername">Email ou Nome de usuário</Label>
+                <Label htmlFor="emailOrUsername">Email</Label>
                 <Input
                   id="emailOrUsername"
                   name="emailOrUsername"
                   type="text"
-                  placeholder="seu.email@exemplo.com ou nome_usuario"
+                  placeholder="seu.email@exemplo.com"
                   value={formData.emailOrUsername}
                   onChange={handleChange}
                   required
                 />
-                <p className="text-xs text-gray-500">Digite seu email ou nome de usuário para fazer login</p>
+                <p className="text-xs text-gray-500">Digite seu email para fazer login</p>
               </div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -207,6 +226,9 @@ export default function LoginPage() {
               <Button type="submit" className="w-full bg-primary hover:bg-orange-600" disabled={loading}>
                 {loading ? "Entrando..." : "Entrar"}
               </Button>
+              <span>
+                    {error}
+              </span>
             </form>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">

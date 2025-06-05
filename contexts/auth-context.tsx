@@ -80,11 +80,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       // MODO DE DESENVOLVIMENTO: Aceitar qualquer usuário
       // Primeiro, tenta encontrar o usuário no banco de dados
-      const { data: userData, error: userError } = await supabase
-        .from("users")
-        .select("*")
-        .or(`email_usuario.eq.${emailOrUsername},username.eq.${emailOrUsername}`)
-        .single()
+      // const { data: userData, error: userError } = await supabase
+      //   .from("users")
+      //   .select("*")
+      //   .or(`email_usuario.eq.${emailOrUsername},username.eq.${emailOrUsername}`)
+      //   .single()
 
       if (!userError && userData) {
         // Se encontrou o usuário, aceita qualquer senha
